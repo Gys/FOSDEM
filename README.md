@@ -5,10 +5,10 @@ I could not find a list of all presentations sorted by time only. Such list make
 
 To create my list I deciced to parse the online schedule into a new schedule, sorted by time.
 
-If you also want such schedule then just download the html file and type `open fosdem_schedule.html`. Times are in local Brussels time.
-
 The resulting fosdem_schedule.html has more or less the same styling as the original FOSDEM page.
 
-If you want to make your own list, the code is simple:
+The last version saved in this repo can be opened directly here: https://rawcdn.githack.com/Gys/fosdem/main/fosdem_schedule.html
+
+Alternatively you can make your own list (or process the list otherwise), the code is simple:
 
 First the html of https://fosdem.org/2021/schedule/events/ is loaded. [Goquery]("github.com/PuerkitoBio/goquery") is used to parse the html into a list of all events. That list is sorted by datetime and finally written to a html file as a table. 

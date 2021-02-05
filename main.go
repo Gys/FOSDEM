@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -10,6 +9,7 @@ import (
 	"text/template"
 	"time"
 
+	md "github.com/JohannesKaufmann/html-to-markdown"
 	"github.com/PuerkitoBio/goquery"
 )
 
@@ -25,6 +25,51 @@ type eventDetails struct {
 
 func (e eventDetails) StartAsHTML() string {
 	return e.Start.Format("15:04") + "&nbsp;-&nbsp;" + e.End.Format("15:04")
+}
+
+func main() {
+	list := getSchedule()
+	// Sort by datetime start
+	sort.Slice(list, func(i int, j int) bool {
+		return list[i].Start.Before(list[j].Start)
+	})
+	writeHTML("fosdem_schedule.html", list)
+	// writeMD("fosdem_schedule.md", list)
+}
+
+func writeHTML(fn string, list []eventDetails) {
+	f, err := os.Create(fn)
+	if err != nil {
+		log.Fatalf("Unable to create '%s' because %s", fn, err)
+	}
+	defer f.Close()
+	t := template.Must(template.New("").Parse(htmlTemplate))
+	if err := t.Execute(f, &list); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func writeMD(fn string, list []eventDetails) {
+	// experimental
+	f, err := os.Create(fn)
+	if err != nil {
+		log.Fatalf("Unable to create '%s' because %s", fn, err)
+	}
+	defer f.Close()
+
+	converter := md.NewConverter("", true, nil)
+	for i := range list {
+		list[i].TitleHTML, _ = converter.ConvertString(list[i].TitleHTML)
+		list[i].SpeakersHTML, _ = converter.ConvertString(list[i].SpeakersHTML)
+		list[i].RoomHTML, _ = converter.ConvertString(list[i].RoomHTML)
+		list[i].AttachmentsHTML, _ = converter.ConvertString(list[i].AttachmentsHTML)
+		list[i].VideoHTML, _ = converter.ConvertString(list[i].VideoHTML)
+	}
+
+	t := template.Must(template.New("").Parse(mdTemplate))
+	if err := t.Execute(f, &list); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func getSchedule() (list []eventDetails) {
@@ -114,27 +159,6 @@ func getSchedule() (list []eventDetails) {
 	return
 }
 
-func main() {
-	list := getSchedule()
-	// Sort by datetime start
-	sort.Slice(list, func(i int, j int) bool {
-		return list[i].Start.Before(list[j].Start)
-	})
-	for _, event := range list {
-		fmt.Printf("%s %s\n", event.TitleHTML, event.Start)
-	}
-	fn := "fosdem_schedule.html"
-	f, err := os.Create(fn)
-	if err != nil {
-		log.Fatalf("Unable to create '%s' because %s", fn, err)
-	}
-	defer f.Close()
-	t := template.Must(template.New("").Parse(pageTemplate))
-	if err := t.Execute(f, &list); err != nil {
-		log.Fatal(err)
-	}
-}
-
 func htmlWithFullUrls(s *goquery.Selection) string {
 	html, err := s.Html()
 	if err != nil {
@@ -147,7 +171,7 @@ func htmlWithFullUrls(s *goquery.Selection) string {
 	return html
 }
 
-const pageTemplate = `
+const htmlTemplate = `
 <!doctype html>
 <html lang="en">
 	<head>
@@ -170,4 +194,10 @@ const pageTemplate = `
 		</div>
 	</body>
 </html>
+`
+
+const mdTemplate = `
+{{range .}}
+{{.StartAsHTML}}|{{.RoomHTML}}|{{.TitleHTML}}|{{.AttachmentsHTML}}|{{.SpeakersHTML}}|{{.VideoHTML}}
+{{end}}
 `

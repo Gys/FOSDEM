@@ -30,6 +30,7 @@ func (e eventDetails) StartAsHTML() string {
 func main() {
 	list := getSchedule()
 	// Sort by datetime start
+	// TODO: sort also by end time
 	sort.Slice(list, func(i int, j int) bool {
 		return list[i].Start.Before(list[j].Start)
 	})
@@ -168,6 +169,8 @@ func htmlWithFullUrls(s *goquery.Selection) string {
 	if !strings.Contains(html, "https://fosdem.org") {
 		html = strings.ReplaceAll(html, "href=\"", "href=\"https://fosdem.org")
 	}
+	// Open all links in new tab
+	html = strings.ReplaceAll(html, "href=\"", "target=\"_blank\" href=\"")
 	return html
 }
 
@@ -188,7 +191,7 @@ const htmlTemplate = `
 		<div id="main">
 			<table class="table table-striped table-bordered table-condensed">
 			{{range .}}
-			<tr><td>{{.StartAsHTML}}</td><td>{{.RoomHTML}}</td><td>{{.TitleHTML}}</td><td>{{.AttachmentsHTML}}</td><td>{{.SpeakersHTML}}</td><td>{{.VideoHTML}}</td></tr>
+			<tr><td>{{.StartAsHTML}}</td><td>{{.RoomHTML}}</td><td><input type="checkbox"></td><td>{{.TitleHTML}}</td><td>{{.AttachmentsHTML}}</td><td>{{.SpeakersHTML}}</td><td>{{.VideoHTML}}</td></tr>
 			{{end}}
 			</table>
 		</div>

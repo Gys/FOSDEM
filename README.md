@@ -1,7 +1,7 @@
 # Customized FOSDEM schedule
 A simple application for my custom sorted list of all events in FOSDEM 2021.
 
-The last version saved in this repo can be opened here: https://rawcdn.githack.com/Gys/fosdem/main/fosdem_schedule.html
+The last version saved in this repo can be opened here: https://rawcdn.githack.com/Gys/fosdem/main/fosdem_schedules.html
 
 All times are in local Brussels (Belgium, CET) time.
 
@@ -12,7 +12,7 @@ I could not find a list of all presentations sorted by time only. Such list make
 
 To create my list I deciced to parse the online schedule into a new schedule, sorted by time.
 
-The resulting fosdem_schedule.html has more or less the same styling as the original FOSDEM page.
+The resulting fosdem_schedules.html has more or less the same styling as the original FOSDEM page.
 
 Alternatively you can make your own list (or process the list otherwise), the code is simple:
 

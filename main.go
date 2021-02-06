@@ -38,9 +38,9 @@ func main() {
 	sort.Slice(list, func(i int, j int) bool {
 		return list[i].Start.Before(list[j].Start)
 	})
-	writeHTML("fosdem_schedule.html", list)
-	// writeMD("fosdem_schedule.md", list)
-	// writeCSV("fosdem_schedule.csv", list)
+	writeHTML("fosdem_schedules.html", list)
+	// writeMD("fosdem_schedules.md", list)
+	// writeCSV("fosdem_schedules.csv", list)
 }
 
 func writeHTML(fn string, list []eventDetails) {
@@ -220,7 +220,7 @@ const htmlTemplate = `
 	<head>
 		<meta charset="utf-8">
 		<title>The HTML5 Herald</title>
-		<link media="all" rel="stylesheet" type="text/css" href="fosdem_schedule.css">
+		<link media="all" rel="stylesheet" type="text/css" href="fosdem_schedules.css">
 		<style>
 			#main {
 				max-width: 100%;

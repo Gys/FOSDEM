@@ -21,6 +21,7 @@ type eventDetails struct {
 	End             time.Time
 	AttachmentsHTML string
 	VideoHTML       string
+	ID              string // unique id for each talk, use title url
 }
 
 func (e eventDetails) StartAsHTML() string {
@@ -104,7 +105,8 @@ func getSchedule() (list []eventDetails) {
 			// Title with link
 			if j == 0 {
 				event.TitleHTML = htmlWithFullUrls(e)
-				// TODO: maybe split text and link
+				event.ID, _ = e.Find("a").Attr("href")
+				// TODO: maybe split text and link - beware the block might have several texts/links
 				// event.title = e.Text()
 				// link, _ := e.Find("a").Attr("href")
 				// event.link = "https://fosdem.org" + link
@@ -191,10 +193,24 @@ const htmlTemplate = `
 		<div id="main">
 			<table class="table table-striped table-bordered table-condensed">
 			{{range .}}
-			<tr><td>{{.StartAsHTML}}</td><td>{{.RoomHTML}}</td><td><input type="checkbox"></td><td>{{.TitleHTML}}</td><td>{{.AttachmentsHTML}}</td><td>{{.SpeakersHTML}}</td><td>{{.VideoHTML}}</td></tr>
+			<tr><td>{{.StartAsHTML}}</td><td>{{.RoomHTML}}</td><td><input type="checkbox" id="{{.ID}}" onclick="handleClick(event)"></td><td>{{.TitleHTML}}</td><td>{{.AttachmentsHTML}}</td><td>{{.SpeakersHTML}}</td><td>{{.VideoHTML}}</td></tr>
 			{{end}}
 			</table>
 		</div>
+		<script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
+		<script>
+			for (let box in Cookies.get()) {
+				document.getElementById(box).checked = true;
+			}
+			function handleClick(e) {
+				if (e.target.checked) {
+					Cookies.set(e.target.id, true, { expires: 180 });
+				} else {
+					Cookies.remove(e.target.id);
+				}
+				console.log(Cookies.get());
+			}
+		</script>
 	</body>
 </html>
 `

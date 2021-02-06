@@ -17,3 +17,7 @@ The resulting fosdem_schedule.html has more or less the same styling as the orig
 Alternatively you can make your own list (or process the list otherwise), the code is simple:
 
 First the html of https://fosdem.org/2021/schedule/events/ is loaded. [Goquery]("github.com/PuerkitoBio/goquery") is used to parse the html into a slice with all events. That list is sorted by datetime and finally written to a html file as a table. 
+
+## Ideas
+
+* Export as csv to easily import in other applications.

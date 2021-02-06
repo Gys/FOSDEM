@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -15,6 +16,8 @@ import (
 
 type eventDetails struct {
 	TitleHTML       string
+	TitleText       string
+	TitleLink       string
 	SpeakersHTML    string
 	RoomHTML        string
 	Start           time.Time
@@ -37,6 +40,7 @@ func main() {
 	})
 	writeHTML("fosdem_schedule.html", list)
 	// writeMD("fosdem_schedule.md", list)
+	// writeCSV("fosdem_schedule.csv", list)
 }
 
 func writeHTML(fn string, list []eventDetails) {
@@ -51,6 +55,24 @@ func writeHTML(fn string, list []eventDetails) {
 	}
 }
 
+func writeCSV(fn string, list []eventDetails) {
+	// experimental
+	// TODO: how to write a variable number of text/link combinations in a useful way?
+	f, err := os.Create(fn)
+	if err != nil {
+		log.Fatalf("Unable to create '%s' because %s", fn, err)
+	}
+	defer f.Close()
+	for i := range list {
+		fmt.Fprintf(f, "\"%s\"", list[i].TitleText)
+		fmt.Fprintf(f, ",\"%s\"", list[i].TitleLink)
+		fmt.Fprintf(f, ",\"%s\"", list[i].RoomHTML)
+		fmt.Fprintf(f, ",\"%s\"", list[i].Start.Format("2006-01-02 15:04"))
+		fmt.Fprintf(f, ",\"%s\"", list[i].End.Format("2006-01-02 15:04"))
+		fmt.Fprintf(f, "\n")
+	}
+}
+
 func writeMD(fn string, list []eventDetails) {
 	// experimental
 	f, err := os.Create(fn)
@@ -58,7 +80,6 @@ func writeMD(fn string, list []eventDetails) {
 		log.Fatalf("Unable to create '%s' because %s", fn, err)
 	}
 	defer f.Close()
-
 	converter := md.NewConverter("", true, nil)
 	for i := range list {
 		list[i].TitleHTML, _ = converter.ConvertString(list[i].TitleHTML)
@@ -67,7 +88,6 @@ func writeMD(fn string, list []eventDetails) {
 		list[i].AttachmentsHTML, _ = converter.ConvertString(list[i].AttachmentsHTML)
 		list[i].VideoHTML, _ = converter.ConvertString(list[i].VideoHTML)
 	}
-
 	t := template.Must(template.New("").Parse(mdTemplate))
 	if err := t.Execute(f, &list); err != nil {
 		log.Fatal(err)
@@ -102,14 +122,13 @@ func getSchedule() (list []eventDetails) {
 		}
 		event := eventDetails{}
 		dt.Each(func(j int, e *goquery.Selection) {
-			// Title with link
+			// Title
 			if j == 0 {
 				event.TitleHTML = htmlWithFullUrls(e)
 				event.ID, _ = e.Find("a").Attr("href")
-				// TODO: maybe split text and link - beware the block might have several texts/links
-				// event.title = e.Text()
-				// link, _ := e.Find("a").Attr("href")
-				// event.link = "https://fosdem.org" + link
+				t, l := splitHTML(e)
+				event.TitleText = first(t)
+				event.TitleLink = first(l)
 			}
 			// Speakers
 			if j == 1 {
@@ -158,6 +177,25 @@ func getSchedule() (list []eventDetails) {
 			}
 		})
 		list = append(list, event)
+	})
+	return
+}
+
+func first(s []string) string {
+	if len(s) == 0 {
+		return ""
+	}
+	return s[0]
+}
+
+func splitHTML(s *goquery.Selection) (texts []string, links []string) {
+	s.Children().Each(func(i int, c *goquery.Selection) {
+		texts = append(texts, c.Text())
+		link, _ := c.Attr("href")
+		if !strings.HasPrefix(link, "https://fosdem.org") {
+			link = "https://fosdem.org" + link
+		}
+		links = append(links, link)
 	})
 	return
 }

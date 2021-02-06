@@ -220,7 +220,7 @@ const htmlTemplate = `
 	<head>
 		<meta charset="utf-8">
 		<title>The HTML5 Herald</title>
-		<link media="all" rel="stylesheet" type="text/css" href="https://fosdem.org/2021/assets/style/fosdem-18736d187ceb9d8deb0e21312ca92ecbafa3786eabacf5c3a574d0f73c273843.css">
+		<link media="all" rel="stylesheet" type="text/css" href="fosdem_schedule.css">
 		<style>
 			#main {
 				max-width: 100%;

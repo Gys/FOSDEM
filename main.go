@@ -33,10 +33,15 @@ func (e eventDetails) StartAsHTML() string {
 
 func main() {
 	list := getSchedule()
-	// Sort by datetime start
-	// TODO: sort also by end time
+	// Sort by datetime start and duration
 	sort.Slice(list, func(i int, j int) bool {
-		return list[i].Start.Before(list[j].Start)
+		if list[i].Start.Before(list[j].Start) {
+			return true
+		}
+		if list[i].Start.After(list[j].Start) {
+			return false
+		}
+		return list[i].End.Before(list[j].End)
 	})
 	writeHTML("fosdem_schedules.html", list)
 	// writeMD("fosdem_schedules.md", list)

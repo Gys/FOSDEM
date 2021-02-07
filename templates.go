@@ -22,17 +22,21 @@ const htmlTemplate = `
 	</head>
 	<body class="schedule-events">
 		<div id="main">
-			<table class="table table-striped table-bordered table-condensed">
+			<table id="talktable" class="table table-bordered table-condensed">
 			{{range .}}
-			<tr><td>{{.StartAsHTML}}</td><td>{{.RoomHTML}}</td><td><input type="checkbox" id="{{.ID}}" onclick="handleClick(event)"></td><td>{{.TitleHTML}}</td><td>{{.AttachmentsHTML}}</td><td>{{.SpeakersHTML}}</td><td>{{.VideoHTML}}</td></tr>
+			<tr><td>{{.StartAsHTML}}</td><td>{{.EndAsHTML}}</td><td>{{.RoomHTML}}</td><td><input type="checkbox" id="{{.ID}}" onclick="handleClick(event)"></td><td>{{.TitleHTML}}</td><td>{{.AttachmentsHTML}}</td><td>{{.SpeakersHTML}}</td><td>{{.VideoHTML}}</td></tr>
 			{{end}}
 			</table>
 		</div>
 		<script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
 		<script>
+			// retrieve all marked events from the cookie
 			for (let box in Cookies.get()) {
 				document.getElementById(box).checked = true;
 			}
+			// show active events now and repeat every minute
+			showActive()
+			window.setInterval(showActive, 60 * 1000);
 			function handleClick(e) {
 				if (e.target.checked) {
 					Cookies.set(e.target.id, true, { expires: 180 });
@@ -41,7 +45,26 @@ const htmlTemplate = `
 				}
 				console.log(Cookies.get());
 			}
-		</script>
+			function showActive() {
+				const now = new Date(); 
+				let nn = now.getMinutes();
+				let hh = now.getHours();
+				if (nn <= 9) {
+					nn = "0" + nn;
+				}
+				const t = hh + ":" + nn;
+				console.log(t);
+				var table = document.getElementById("talktable");
+				for (let i in table.rows) {
+					if (i>0) {
+						let row = table.rows[i];
+						if (t>=row.cells[0].innerText && t<=row.cells[1].innerText) {;
+							row.style.backgroundColor = 'lightgrey';
+						}
+					}
+				}
+			}
+			</script>
 	</body>
 </html>
 `

@@ -14,6 +14,8 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
+// TODO: add header to html output with background, timezone, github repo
+
 type eventDetails struct {
 	TitleHTML       string
 	TitleText       string
@@ -28,7 +30,11 @@ type eventDetails struct {
 }
 
 func (e eventDetails) StartAsHTML() string {
-	return e.Start.Format("15:04") + "&nbsp;-&nbsp;" + e.End.Format("15:04")
+	return e.Start.Format("15:04")
+}
+
+func (e eventDetails) EndAsHTML() string {
+	return e.End.Format("15:04")
 }
 
 func main() {
@@ -80,6 +86,7 @@ func writeCSV(fn string, list []eventDetails) {
 
 func writeMD(fn string, list []eventDetails) {
 	// experimental
+	// TODO: local preview does not show contents as a table?
 	f, err := os.Create(fn)
 	if err != nil {
 		log.Fatalf("Unable to create '%s' because %s", fn, err)

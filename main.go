@@ -107,7 +107,7 @@ func writeMD(fn string, list []eventDetails) {
 }
 
 func getSchedule() (list []eventDetails) {
-	res, err := http.Get("https://fosdem.org/2021/schedule/events/")
+	res, err := http.Get("https://fosdem.org/2022/schedule/events/")
 	if err != nil {
 		log.Fatal(err)
 	}

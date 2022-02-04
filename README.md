@@ -1,7 +1,7 @@
 # Customized FOSDEM schedule
-A simple application for my custom sorted list of all events in FOSDEM 2021.
+A simple application for my custom sorted list of all events in FOSDEM 2021, now updated for FOSDEM 2022.
 
-The last version saved in this repo can be opened here: https://rawcdn.githack.com/Gys/fosdem/main/fosdem_schedules.html
+The last version saved in this repo (Feb 4, 2022, 11pm) can be opened here: https://rawcdn.githack.com/Gys/FOSDEM/10b9be0d1a85abb668abd1c1d83ebf9134f82491/fosdem_schedules.html
 
 ## Features
 * Private: there is no interaction with a server except for (anonymously) loading the page.
